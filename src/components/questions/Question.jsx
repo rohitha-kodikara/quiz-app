@@ -8,13 +8,12 @@ const Question = ({
   handlePreviousQuestion, 
   alternativeIndexes, 
   currentIndex,
-  setCurrentIndex,
+  handleSetCurrentIndex,
   questionLength,
   selectedOption,
   setSelectedOption,
   correctAnswers,
-  handleReset
-
+  handleReset,
 }) => {
 
 
@@ -35,6 +34,7 @@ const Question = ({
 
     }
 
+  
     
 //calculate the percentage of correct answers
 const percentageCorrect =
@@ -138,7 +138,7 @@ const percentageCorrect =
            currentIndex > 0 && (
               <button
             type="button"
-            onClick={() => setCurrentIndex(index)}
+            onClick={() => handleSetCurrentIndex(index)}
             key={index}
             className="cursor-pointer rounded-xl bg-white px-4 py-3 text-lg font-semibold text-slate-900 transition-colors hover:bg-blue-600 hover:text-white"
           >

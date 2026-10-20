@@ -31,7 +31,6 @@ const App = () => {
 
         setQuestions(data)
       } catch (error) {
-        console.error(error)
         setError(true)
       } finally {
         setLoading(false)

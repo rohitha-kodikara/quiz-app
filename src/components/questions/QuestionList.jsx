@@ -1,23 +1,54 @@
-import { useState } from 'react'
+import { useReducer, useState } from 'react'
 import Question from './Question'
 import { getRandomQuestionIndexes } from '../../utils/getRandomQuestionIndexes'
 
+const initialState = {
+  currentIndex: 0,
+}
 
+function reducer(state, action) {
+  switch (action.type) {
+    case 'next_question':
+      // the reducer must be pure, so the max comes in via the action
+      return {
+        ...state,
+        currentIndex: Math.min(state.currentIndex + 1, action.payload - 1),
+      }
+
+    case 'previous_question':
+      return {
+        ...state,
+        currentIndex: Math.max(state.currentIndex - 1, 0),
+      }
+
+    case 'set_current_index':
+      return { ...state, currentIndex: action.payload }
+
+    case 'reset':
+      return initialState
+
+    default:
+      return state
+  }
+}
 
 const QuestionList = ({ questions }) => {
-  //controll the current question index
-  const[currentIndex, setCurrentIndex] = useState(0);
+    //controll the current question index
+   // const[currentIndex, setCurrentIndex] = useState(0);
    //track the user's selected option
     const [selectedOption, setSelectedOption] = useState(null);
 
-    //track user's answers as object
-     const [userAnswers, setUserAnswers] = useState([]);
+  //track user's answers as object
+  const [userAnswers, setUserAnswers] = useState([]);
+
+
+
+    const[state, dispatch] = useReducer(reducer,initialState);
+    
 
  //handle the next question
  function handleNextQuestion(){
-    if (currentIndex < questions.length - 1) {
-    setCurrentIndex((index) => index + 1)
-  }
+      dispatch({ type: 'next_question', payload: questions.length })
   //reset the selected option when moving to the next question
   setSelectedOption(null); 
   
@@ -35,18 +66,16 @@ const QuestionList = ({ questions }) => {
 
  //handle the previous question
  function handlePreviousQuestion(){
-   if(currentIndex > 0){
-     setCurrentIndex((index) => index - 1)
-   }
+   dispatch({ type: 'previous_question' })
    
  }
 
  //get the current question based on the current index
- const currentQuestion = questions[currentIndex];
+ const currentQuestion = questions[state.currentIndex];
 
  //get the random question indexes.
   const alternativeIndexes = questions.length
-    ? getRandomQuestionIndexes(currentIndex, questions.length)
+    ? getRandomQuestionIndexes(state.currentIndex, questions.length)
     : []
 
   //pass the question length to controll next button visibility
@@ -58,12 +87,13 @@ const QuestionList = ({ questions }) => {
 
  
 function handleReset(){
-  setCurrentIndex(0);
+  dispatch({ type: 'reset' });
   setSelectedOption(null);
   setUserAnswers([]);
 }
 
-  
+
+      
 
   return (
   
@@ -77,8 +107,8 @@ function handleReset(){
             handleNextQuestion={handleNextQuestion}
             handlePreviousQuestion={handlePreviousQuestion}
             alternativeIndexes={alternativeIndexes}
-            setCurrentIndex={setCurrentIndex}
-            currentIndex={currentIndex}
+            handleSetCurrentIndex={(index) => dispatch({ type: 'set_current_index', payload: index })}
+            currentIndex={state.currentIndex}
             questionLength={questionLength}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
