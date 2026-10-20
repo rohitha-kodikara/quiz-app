@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { Check, RotateCcw, X } from 'lucide-react'
+import { useState } from 'react'
 import confetti from 'canvas-confetti'
+import { RotateCcw } from 'lucide-react';
 
 const Question = ({ 
   question, 
@@ -9,11 +9,14 @@ const Question = ({
   alternativeIndexes, 
   currentIndex,
   setCurrentIndex,
-  questionLength }) => {
+  questionLength,
+  selectedOption,
+  setSelectedOption,
+  correctAnswers,
+  handleReset
 
+}) => {
 
-    //track the user's selected option
-    const [selectedOption, setSelectedOption] = useState(null);
 
 
     function handleOptionSelect(optionIndex) {
@@ -32,6 +35,10 @@ const Question = ({
 
     }
 
+    
+//calculate the percentage of correct answers
+const percentageCorrect =
+  questionLength > 0 ? (correctAnswers / questionLength) * 100 : 0;
 
   return (
      <div className="bg-slate-900 rounded-2xl p-8 shadow-inner sm:p-10 lg:p-12">
@@ -41,16 +48,17 @@ const Question = ({
      <div className="mb-12 flex items-start gap-4">
       <div className="flex-1">
         <div className="h-4 overflow-hidden rounded-full bg-amber-100">
-          <div className="h-full w-[13%] rounded-full bg-green-600" />
+          <div className="h-full  rounded-full bg-green-600" style={{ width: `${percentageCorrect}%` }} />
         </div>
-        <div className="mt-3 flex items-center justify-between gap-4 font-semibold text-white">
-          <span>Question 2 / 15</span>
-          <span>20 / 280 points</span>
+        <div  className="mt-3 flex items-center justify-between gap-4 font-semibold text-white">
+          <span>Question {currentIndex + 1} / 15</span>
+          <span>{Math.round(percentageCorrect)}  / 100 % points</span>
         </div>
       </div>
 
         <button
           type="button"
+          onClick={handleReset}
           className="h-12 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-stone-200 px-4 text-lg font-semibold text-slate-900 transition-colors hover:bg-amber-200 hover:text-black"
         >
           <RotateCcw aria-hidden="true" className="size-5" />
@@ -141,8 +149,7 @@ const Question = ({
          
         </div>
 
-          {
-            currentIndex < questionLength -1 && (
+      
              <button
          type="button"
         onClick={handleNextQuestion}
@@ -162,8 +169,7 @@ const Question = ({
            <path d="m9 18 6-6-6-6" />
          </svg>
         </button>
-            )
-          }
+           
        
       </div>
     

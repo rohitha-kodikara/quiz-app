@@ -6,14 +6,31 @@ import { getRandomQuestionIndexes } from '../../utils/getRandomQuestionIndexes'
 
 const QuestionList = ({ questions }) => {
   //controll the current question index
-  const[currentIndex, setCurrentIndex] = useState(0)
+  const[currentIndex, setCurrentIndex] = useState(0);
+   //track the user's selected option
+    const [selectedOption, setSelectedOption] = useState(null);
 
+    //track user's answers as object
+     const [userAnswers, setUserAnswers] = useState([]);
 
  //handle the next question
  function handleNextQuestion(){
     if (currentIndex < questions.length - 1) {
     setCurrentIndex((index) => index + 1)
   }
+  //reset the selected option when moving to the next question
+  setSelectedOption(null); 
+  
+  //store user selection with correctness in the userAnswers state
+   setUserAnswers((prev) => [
+  ...prev.filter((answer) => answer.questionId !== currentQuestion.id),
+  {
+    questionId: currentQuestion.id,
+    selectedOption,
+    isCorrect: selectedOption === currentQuestion.correctOption,
+  },
+]);
+
  }
 
  //handle the previous question
@@ -33,8 +50,20 @@ const QuestionList = ({ questions }) => {
     : []
 
   //pass the question length to controll next button visibility
-  const questionLength = questions.length
+  const questionLength = questions.length 
 
+  const correctAnswers = userAnswers.filter(
+  (answer) => answer.isCorrect
+).length;
+
+ 
+function handleReset(){
+  setCurrentIndex(0);
+  setSelectedOption(null);
+  setUserAnswers([]);
+}
+
+  
 
   return (
   
@@ -51,6 +80,10 @@ const QuestionList = ({ questions }) => {
             setCurrentIndex={setCurrentIndex}
             currentIndex={currentIndex}
             questionLength={questionLength}
+            selectedOption={selectedOption}
+            setSelectedOption={setSelectedOption}
+            correctAnswers={correctAnswers}
+            handleReset={handleReset}
             />
           ) 
        }
